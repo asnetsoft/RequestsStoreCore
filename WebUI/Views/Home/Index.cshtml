@@ -1,0 +1,119 @@
+﻿@model List<WebUI.Models.RequestsStoreViewModel>
+
+
+@{
+    ViewBag.Title = "Список заявок";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Список заявок</h4>
+<hr />
+@using (Html.BeginForm())
+{
+    <div class="form-group ">
+        <div class="content row ">
+            <div class="form-inline">
+                <div class="col-md-12 Margin1x">
+                    <label class="control-label">с</label>
+                    <div class="input-group date">
+                        @Html.TextBox("DateStart", (string)ViewBag.DateStart, new { @class = "form-control datepicker", @readonly = "readonly" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    </div>
+                    <label class="control-label">по</label>
+                    <div class="input-group date">
+                        @Html.TextBox("DateEnd", (string)ViewBag.DateEnd, new { @class = "form-control datepicker", @readonly = "readonly" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    </div>
+
+                    @Html.DropDownList("statuses", (IEnumerable<SelectListItem>)ViewBag.StatusesList, "Все", new { @class = "form-control" })
+                    @Html.CheckBox("returnedFilter", (bool)@ViewBag.ReturnedFilter, new { @class = "form-control" })
+                    <span>Возвращенные заявки</span>
+                    <input type="submit" value="Найти" class="btn btn-primary form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>
+        <i class="text-primary glyphicon glyphicon-plus"></i>@Html.ActionLink("Создать заявку", "Create")
+    </p>
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.ActionLink("Дата создания", "Index", new { sortOrder = ViewBag.sortCreateDate, dateStart = ViewBag.DateStart, dateEnd = ViewBag.DateEnd })
+            </th>
+            <th>
+                @Html.ActionLink("	Дата завершения", "Index", new { sortOrder = ViewBag.sortDateEnd, dateStart = ViewBag.DateStart, dateEnd = ViewBag.DateEnd })
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Requests.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Statuses.Name)
+            </th>
+
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            if (item != null)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Requests.CreateDate)
+                    </td>
+                    <td>
+               
+                            @Html.DisplayFor(modelItem => item.Requests.ClosedDate)
+                    </td>
+                    <td>
+                        @Html.ActionLink(item.Requests.Name, "AddRequestStore", new { id = item.RequestsStoreId })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Statuses.Name)
+                    </td>
+
+                    <td>
+                        <a href="@Url.Action("Edit", "Home",new { id = item.Requests.RequestId})"><i class="glyphicon glyphicon-pencil"></i></a>
+                        <a href="@Url.Action("Details", "Home",new { id = item.Requests.RequestId})"><i class="glyphicon glyphicon-file"></i></a>
+                        <a href="@Url.Action("Delete", "Home", new { id = item.Requests.RequestId })" class="deleteRequest"><i class="glyphicon glyphicon-trash"></i></a>
+                    </td>
+                </tr>
+            }
+        }
+
+    </table>
+}
+                   <div class="modal fade" id="modDialog" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog" id="dialogContent">
+                </div>
+            </div>
+
+
+
+            @section scripts
+    {
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $('.input-group.date').datepicker({
+                            isRTL: false,
+                            autoclose: true,
+                            language: 'ru',
+                        });
+                    });
+
+                    $(function () {
+                        $.ajaxSetup({ cache: false });
+                        $(".deleteRequest").click(function (e) {
+
+                            e.preventDefault();
+                            $.get(this.href, function (data) {
+                                $('#dialogContent').html(data);
+                                $('#modDialog').modal('show');
+                            });
+                        });
+                    })
+                </script>
+            }

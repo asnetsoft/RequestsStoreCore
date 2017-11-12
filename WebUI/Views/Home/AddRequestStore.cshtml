@@ -1,0 +1,78 @@
+﻿@model WebUI.Models.RequestsStoreViewModel
+
+@{
+    ViewBag.Title = "Движение заявки";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Движение заявки</h4>
+        <hr />
+        @Html.HiddenFor(model => model.RequestId)
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Requests.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.Requests.Name, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Requests.Content, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.Raw(Model.Requests.Content)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.Action("DetailsStore", new { id = Model.RequestId })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.StatusId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.StatusId, ViewBag.StatusesList as SelectList, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        
+        @if (Model.StatusId != 4)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Comments, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.Comments, htmlAttributes: new { @class = "form-control required ", @cols = 50, @rows = 10 })
+                    @Html.ValidationMessageFor(model => model.Comments, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Сохранить" class="btn btn-primary @(Model.StatusId == 4 ? "disabled" :"")" />
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+<div>
+    @Html.ActionLink("Вернуться к списку", "Index")
+</div>
+
+@section Scripts {
+    <script>
+        $('input[type=submit]').bind('click', function () {
+            CKEDITOR.instances.Content.updateElement();
+        });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
