@@ -33,7 +33,7 @@
         </div>
         <div class="form-group">
             <div class="col-md-10">
-                @Html.Action("DetailsStore", new { id = Model.RequestId })
+                @await Component.InvokeAsync("DetailsStore", new { id = Model.RequestId })
             </div>
         </div>
         <div class="form-group">
@@ -74,5 +74,4 @@
             CKEDITOR.instances.Content.updateElement();
         });
     </script>
-    @Scripts.Render("~/bundles/jqueryval")
-}
+   
